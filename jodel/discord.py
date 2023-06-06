@@ -1,4 +1,6 @@
 import discord
+from discord.ext import commands
+
 
 class DiscoBot():
     def __init__(self, key):
@@ -12,12 +14,23 @@ class DiscoBot():
     
     def CreateClient(self):
         intents = discord.Intents.default()
-        intents.message_content = True
-        client = DiscoBot(intents=intents)
-        return client
+        intents.typing = False
+        intents.message_content = True  # Add this line to include the message_content intent
+        
+        bot = commands.Bot(command_prefix="!", intents=intents)
+        
+        @bot.event
+        async def on_ready():
+            print(f'Logged in as {bot.user.name}')
+
+        @bot.command()
+        async def hello(ctx):
+            print("triggered")
+            await ctx.send(f'Hello, {ctx.author.name}!')
+        
+        bot.run(self.key)
     
-    def RunClient(self):   
-        self.createClient().run(self.key)
+
 
 
     
