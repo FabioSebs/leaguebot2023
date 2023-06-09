@@ -6,7 +6,7 @@ from . import hashmap
 from . import redisai
 
 def GetPrompt(name, champ):
-    return f'Hey my name is {name} please say my name with a compliment. Now tell me all you can about the champion in league of legends named {champ}'
+    return f'Hey my name is {name} please say my name. Now tell me all you can about the champion in league of legends named {champ}'
 
 class DiscoBot():
     def __init__(self, key, aikey):
@@ -43,20 +43,21 @@ class DiscoBot():
                 return
         
             champ = message.content[1:].lower()
+            author = f'{message.author}'[:-5]
             idx = hashmap.hashChamp(champ)
 
             if champ not in hashmap.champList[idx]:
                 await message.channel.send("I am not qualified to answer this question. You either spelled the name of a champ wrong or are retarded.")
                 return
             
-            if redisai.GetRedis(message.author, champ) == "":
-                reply = self.AI.ask(GetPrompt(name=message.author[:-5], champ= champ))
-                redisai.SetRedis(message.author, champ, reply.choices[0].text.replace('\n', ''))
+            if redisai.GetRedis(author, champ) == None:
+                reply = self.AI.ask(GetPrompt(author, champ= champ))
+                redisai.SetRedis(author, champ, reply.choices[0].text.replace('\n', ''))
                 await message.channel.send(reply.choices[0].text.replace('\n', ''))
             
             else:
-                print(redisai.GetRedis(message.author, champ))
-                await message.channel.send(redisai.GetRedis(message.author, champ))
+                print(redisai.GetRedis(author, champ))
+                await message.channel.send(redisai.GetRedis(author, champ))
             
         bot.run(self.key)
            
