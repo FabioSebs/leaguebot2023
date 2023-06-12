@@ -1,4 +1,4 @@
-FROM python:3.11.0b1-alpine
+FROM python:latest
 WORKDIR /bot
 COPY . .
 RUN pip install -r requirements.txt
